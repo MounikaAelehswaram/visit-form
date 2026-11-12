@@ -1,68 +1,73 @@
-<!DOCTYPE html>
-<html>
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Ellenbarrie Visit Form</title>
-
-<style>
-body{
-    font-family: Arial, sans-serif;
-    background:#f5f5f5;
-    margin:0;
-    padding:20px;
-}
-
-.container{
-    max-width:500px;
-    margin:auto;
-    background:white;
-    padding:20px;
-    border-radius:10px;
-    box-shadow:0 0 10px rgba(0,0,0,0.1);
-}
-
-h2{
-    color:#0078d4;
-    text-align:center;
-}
-
-input, textarea{
-    width:100%;
-    padding:10px;
-    margin-top:5px;
-    margin-bottom:15px;
-    border:1px solid #ccc;
-    border-radius:5px;
-    box-sizing:border-box;
-}
-
-button{
-    width:100%;
-    background:#0078d4;
-    color:white;
-    border:none;
-    padding:12px;
-    font-size:16px;
-    border-radius:5px;
-    cursor:pointer;
-}
-
-button:hover{
-    background:#005ea6;
-}
-
-#status{
-    margin-top:15px;
-    color:green;
-    font-weight:bold;
-}
-</style>
-
-</head>
-
 <body>
 
 <div class="container">
 
-<h2
+<h2>Ellenbarrie Customer Visit Form</h2>
+
+<label>Employee Code</label>
+<input type="text" id="empCode" placeholder="Enter Employee Code" required>
+
+<label>Employee Name</label>
+<input type="text" id="empName" placeholder="Enter Employee Name" required>
+
+<label>Customer Name</label>
+<input type="text" id="customerName" placeholder="Enter Customer Name" required>
+
+<label>Visit Purpose</label>
+<textarea id="purpose" placeholder="Enter Visit Purpose"></textarea>
+
+<button onclick="captureLocation()">
+Submit Visit
+</button>
+
+<div id="status"></div>
+
+</div>
+
+<script>
+
+function captureLocation() {
+
+let empCode = document.getElementById("empCode").value;
+let empName = document.getElementById("empName").value;
+let customerName = document.getElementById("customerName").value;
+let purpose = document.getElementById("purpose").value;
+
+if(empCode === "" || empName === "" || customerName === ""){
+
+document.getElementById("status").innerHTML =
+"<span style='color:red'>Please fill all mandatory fields.</span>";
+
+return;
+
+}
+
+document.getElementById("status").innerHTML =
+"Capturing GPS Location...";
+
+if(!navigator.geolocation){
+
+document.getElementById("status").innerHTML =
+"<span style='color:red'>Geolocation is not supported.</span>";
+
+return;
+
+}
+
+navigator.geolocation.getCurrentPosition(
+
+function(position){
+
+let latitude = position.coords.latitude;
+let longitude = position.coords.longitude;
+let visitTime = new Date().toLocaleString();
+
+document.getElementById("status").innerHTML =
+
+"<div style='color:green'>" +
+"<h3>Visit Submitted Successfully ✅</h3>" +
+
+"<b>Employee Code:</b> " + empCode + "<br>" +
+"<b>Employee Name:</b> " + empName + "<br>" +
+"<b>Customer Name:</b> " + customerName + "<br>" +
+"<b>Visit Purpose:</b> " + purpose + "<br>" +
