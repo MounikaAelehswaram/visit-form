@@ -1,73 +1,74 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Ellenbarrie | Customer Visit Tracking</title>
+
+    <!-- Connect External CSS -->
+    <link rel="stylesheet" href="style.css">
+</head>
+
 <body>
 
-<div class="container">
+    <div class="container">
 
-<h2>Ellenbarrie Customer Visit Form</h2>
+        <div class="header">
+            <h2>Ellenbarrie</h2>
+            <p>Customer Visit Tracking Portal</p>
+        </div>
 
-<label>Employee Code</label>
-<input type="text" id="empCode" placeholder="Enter Employee Code" required>
+        <form id="visitForm">
 
-<label>Employee Name</label>
-<input type="text" id="empName" placeholder="Enter Employee Name" required>
+            <label for="empCode">Employee Code *</label>
+            <input
+                type="text"
+                id="empCode"
+                placeholder="Enter Employee Code"
+                required
+            >
 
-<label>Customer Name</label>
-<input type="text" id="customerName" placeholder="Enter Customer Name" required>
+            <label for="empName">Employee Name *</label>
+            <input
+                type="text"
+                id="empName"
+                placeholder="Enter Employee Name"
+                required
+            >
 
-<label>Visit Purpose</label>
-<textarea id="purpose" placeholder="Enter Visit Purpose"></textarea>
+            <label for="customerName">Customer Name *</label>
+            <input
+                type="text"
+                id="customerName"
+                placeholder="Enter Customer Name"
+                required
+            >
 
-<button onclick="captureLocation()">
-Submit Visit
-</button>
+            <label for="purpose">Visit Purpose</label>
+            <textarea
+                id="purpose"
+                placeholder="Enter Visit Purpose"
+            ></textarea>
 
-<div id="status"></div>
+            <button type="submit" id="submitBtn">
+                Submit Visit
+            </button>
 
-</div>
+        </form>
 
-<script>
+        <div id="status" role="status" aria-live="polite"></div>
 
-function captureLocation() {
+        <div class="footer">
+            Ellenbarrie Customer Visit Management
+        </div>
 
-let empCode = document.getElementById("empCode").value;
-let empName = document.getElementById("empName").value;
-let customerName = document.getElementById("customerName").value;
-let purpose = document.getElementById("purpose").value;
+    </div>
 
-if(empCode === "" || empName === "" || customerName === ""){
+    <!-- Connect JavaScript -->
+    <script src="script.js"></script>
 
-document.getElementById("status").innerHTML =
-"<span style='color:red'>Please fill all mandatory fields.</span>";
-
-return;
-
-}
-
-document.getElementById("status").innerHTML =
-"Capturing GPS Location...";
-
-if(!navigator.geolocation){
-
-document.getElementById("status").innerHTML =
-"<span style='color:red'>Geolocation is not supported.</span>";
-
-return;
-
-}
-
-navigator.geolocation.getCurrentPosition(
-
-function(position){
-
-let latitude = position.coords.latitude;
-let longitude = position.coords.longitude;
-let visitTime = new Date().toLocaleString();
-
-document.getElementById("status").innerHTML =
-
-"<div style='color:green'>" +
-"<h3>Visit Submitted Successfully ✅</h3>" +
-
-"<b>Employee Code:</b> " + empCode + "<br>" +
-"<b>Employee Name:</b> " + empName + "<br>" +
-"<b>Customer Name:</b> " + customerName + "<br>" +
-"<b>Visit Purpose:</b> " + purpose + "<br>" +
+</body>
+</html>
