@@ -37,17 +37,25 @@
             <textarea id="purpose"
                 placeholder="Enter Visit Purpose" required></textarea>
 
-            <label>Current GPS Location</label>
-            <div class="location-box">
-                <button type="button" id="locationBtn">
-                    Capture My Location
-                </button>
-                <p id="locationStatus">Location not captured</p>
-            </div>
+           <label>Current GPS Location</label>
 
-            <input type="hidden" id="latitude">
-            <input type="hidden" id="longitude">
+<div class="location-box">
 
+    <button type="button" id="locationBtn">
+        Capture My Location
+    </button>
+
+    <p id="locationStatus">Location not captured</p>
+
+    <p id="locationAddress">
+        Area and address will appear here.
+    </p>
+
+</div>
+
+<input type="hidden" id="latitude">
+<input type="hidden" id="longitude">
+<input type="hidden" id="locationAddressInput">
             <label for="visitTime">Visit Date & Time</label>
             <input type="text" id="visitTime" readonly>
 

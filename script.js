@@ -2,6 +2,8 @@
 const form = document.getElementById("visitForm");
 const locationBtn = document.getElementById("locationBtn");
 const locationStatus = document.getElementById("locationStatus");
+const locationAddress = document.getElementById("locationAddress");
+const locationAddressInput = document.getElementById("locationAddressInput");
 const statusMessage = document.getElementById("status");
 const submitBtn = document.getElementById("submitBtn");
 
@@ -19,7 +21,7 @@ function updateVisitTime() {
 
 updateVisitTime();
 
-// Capture GPS location
+// Capture GPS location and retrieve readable address
 locationBtn.addEventListener("click", function () {
 
     if (!navigator.geolocation) {
@@ -29,19 +31,58 @@ locationBtn.addEventListener("click", function () {
     }
 
     locationBtn.disabled = true;
-    locationStatus.textContent = "Capturing location...";
+    locationStatus.textContent = "Capturing GPS location...";
+    locationAddress.textContent = "Finding your address...";
+
+    // Clear any previously captured location
+    latitudeInput.value = "";
+    longitudeInput.value = "";
+    locationAddressInput.value = "";
 
     navigator.geolocation.getCurrentPosition(
 
-        function (position) {
+        async function (position) {
 
-            latitudeInput.value = position.coords.latitude;
-            longitudeInput.value = position.coords.longitude;
+            const latitude = position.coords.latitude;
+            const longitude = position.coords.longitude;
+
+            latitudeInput.value = latitude;
+            longitudeInput.value = longitude;
 
             locationStatus.textContent =
-                "Location captured successfully.";
+                "GPS location captured successfully.";
 
-            locationBtn.disabled = false;
+            try {
+
+                // Ask our backend to convert GPS coordinates into an address
+                const response = await fetch(
+                    `/api/reverse-geocode?lat=${latitude}&lon=${longitude}`
+                );
+
+                const result = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(
+                        result.message || "Address lookup failed."
+                    );
+                }
+
+                locationAddress.textContent = result.address;
+                locationAddressInput.value = result.address;
+
+            } catch (error) {
+
+                console.error("Address lookup error:", error);
+
+                locationAddress.textContent =
+                    "GPS captured, but address could not be retrieved.";
+
+                locationAddressInput.value = "";
+
+            } finally {
+
+                locationBtn.disabled = false;
+            }
         },
 
         function (error) {
@@ -51,7 +92,9 @@ locationBtn.addEventListener("click", function () {
             locationStatus.textContent =
                 "Unable to capture location. Please allow location access.";
 
-            console.error(error);
+            locationAddress.textContent = "Address not available.";
+
+            console.error("GPS Error:", error);
         },
 
         {
@@ -62,8 +105,8 @@ locationBtn.addEventListener("click", function () {
     );
 });
 
-// Submit visit form
-form.addEventListener("submit", function (event) {
+// Submit visit details to Node.js backend
+form.addEventListener("submit", async function (event) {
 
     event.preventDefault();
 
@@ -74,23 +117,76 @@ form.addEventListener("submit", function (event) {
         return;
     }
 
+    // Do not submit until the address lookup has finished
+    if (locationBtn.disabled) {
+        statusMessage.textContent =
+            "Please wait while your location address is being retrieved.";
+        statusMessage.style.color = "#c0392b";
+        return;
+    }
+
     const visitData = {
-        EmployeeCode: document.getElementById("empCode").value.trim(),
-        EmployeeName: document.getElementById("empName").value.trim(),
-        CustomerName: document.getElementById("customerName").value.trim(),
-        VisitPurpose: document.getElementById("purpose").value.trim(),
-        Latitude: latitudeInput.value,
-        Longitude: longitudeInput.value,
-        VisitTime: new Date().toISOString()
+        empCode: document.getElementById("empCode").value.trim(),
+        empName: document.getElementById("empName").value.trim(),
+        customerName: document.getElementById("customerName").value.trim(),
+        purpose: document.getElementById("purpose").value.trim(),
+        latitude: latitudeInput.value,
+        longitude: longitudeInput.value,
+        locationAddress: locationAddressInput.value,
+        visitTime: new Date().toISOString()
     };
 
-    console.log("Visit Details:", visitData);
+    submitBtn.disabled = true;
+    submitBtn.textContent = "Submitting...";
 
-    statusMessage.textContent =
-        "Form validated successfully. Storage connection is pending.";
-
+    statusMessage.textContent = "Saving visit details...";
     statusMessage.style.color = "#1769aa";
 
-    console.log("Ready to connect to Google Sheets or Excel.");
-});
+    try {
 
+        const response = await fetch("/api/visits", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(visitData)
+        });
+
+        const result = await response.json();
+
+        if (!response.ok) {
+            throw new Error(result.message || "Submission failed.");
+        }
+
+        statusMessage.textContent =
+            "Visit saved successfully! Visit ID: " + result.visitId;
+
+        statusMessage.style.color = "green";
+
+        form.reset();
+
+        latitudeInput.value = "";
+        longitudeInput.value = "";
+        locationAddressInput.value = "";
+
+        locationStatus.textContent = "Location not captured";
+        locationAddress.textContent =
+            "Area and address will appear here.";
+
+        updateVisitTime();
+
+    } catch (error) {
+
+        console.error("Submission Error:", error);
+
+        statusMessage.textContent =
+            error.message || "Unable to save visit details.";
+
+        statusMessage.style.color = "#c0392b";
+
+    } finally {
+
+        submitBtn.disabled = false;
+        submitBtn.textContent = "Submit Visit";
+    }
+});
