@@ -1,56 +1,55 @@
 
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>Ellenbarrie | Customer Visit Tracking</title>
 
-    <!-- Connect External CSS -->
     <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
     <div class="container">
-<div class="header">
-    <h2>Ellenbarrie Industrial Gases Limited</h2>
-    <p>Customer Visit Tracking Portal</p>
-</div>
+
+        <div class="header">
+            <h2>Ellenbarrie Industrial Gases Limited</h2>
+            <p>Customer Visit Tracking Portal</p>
+        </div>
 
         <form id="visitForm">
 
             <label for="empCode">Employee Code *</label>
-            <input
-                type="text"
-                id="empCode"
-                placeholder="Enter Employee Code"
-                required
-            >
+            <input type="text" id="empCode"
+                placeholder="Enter Employee Code" required>
 
             <label for="empName">Employee Name *</label>
-            <input
-                type="text"
-                id="empName"
-                placeholder="Enter Employee Name"
-                required
-            >
+            <input type="text" id="empName"
+                placeholder="Enter Employee Name" required>
 
             <label for="customerName">Customer Name *</label>
-            <input
-                type="text"
-                id="customerName"
-                placeholder="Enter Customer Name"
-                required
-            >
+            <input type="text" id="customerName"
+                placeholder="Enter Customer Name" required>
 
-            <label for="purpose">Visit Purpose</label>
-            <textarea
-                id="purpose"
-                placeholder="Enter Visit Purpose"
-            ></textarea>
+            <label for="purpose">Visit Purpose *</label>
+            <textarea id="purpose"
+                placeholder="Enter Visit Purpose" required></textarea>
+
+            <label>Current GPS Location</label>
+            <div class="location-box">
+                <button type="button" id="locationBtn">
+                    Capture My Location
+                </button>
+                <p id="locationStatus">Location not captured</p>
+            </div>
+
+            <input type="hidden" id="latitude">
+            <input type="hidden" id="longitude">
+
+            <label for="visitTime">Visit Date & Time</label>
+            <input type="text" id="visitTime" readonly>
 
             <button type="submit" id="submitBtn">
                 Submit Visit
@@ -66,7 +65,6 @@
 
     </div>
 
-    <!-- Connect JavaScript -->
     <script src="script.js"></script>
 
 </body>
